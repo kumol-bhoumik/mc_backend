@@ -81,6 +81,7 @@ class OrgController {
     async getMyOrg(req, res) {
         try {
             const userId = req.user.id;
+            console.log(userId);
             const user = await UserService.findUser({ id: userId });
             if (!user) {
                 return badRequest(res, 'User not found');
@@ -102,7 +103,8 @@ class OrgController {
     async getOrgMembers(req, res) {
         try {
             const { id } = req.params;
-            const members = await UserService.getUser({ "org.org_id": id });
+            const members = await UserService.getOrgUser({ "org.org_id": id });
+
             if (!members) {
                 return badRequest(res, 'Organization members not found');
             }

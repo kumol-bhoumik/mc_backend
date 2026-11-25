@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const OrgController = require('../../controllers/OrgController');
 const AuthService = require('../../services/AuthService');
+const SavingController = require("../../controllers/SavingController");
 router.post('/create', AuthService.checkAuth, OrgController.createOrg);
 router.get('/orgs/mine', AuthService.checkAuth, OrgController.getMyOrg);
 router.get('/:id/members', AuthService.checkAuth, OrgController.getOrgMembers);
@@ -9,5 +10,7 @@ router.get('/orgs', OrgController.getOrgs);
 router.get('/orgs/:id', OrgController.getOrgById);
 router.put('/orgs/:id', AuthService.checkAuth, OrgController.updateOrg);
 router.delete('/orgs/:id', AuthService.checkAuth, OrgController.deleteOrg);
-
+router.post("/saving/add", AuthService.checkAuth, SavingController.addSaving);
+router.get("/:org_id/saving/fetch", AuthService.checkAuth, SavingController.loadSaving);
+router.get(':org_id/members/:user_id/savings', AuthService.checkAuth, SavingController.loadSaving);
 module.exports = router;

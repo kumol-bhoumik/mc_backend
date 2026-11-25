@@ -76,7 +76,57 @@ class LoanController {
             let { status, page, limit } = req.query;
             const skip = (page - 1) * limit;
             const query = status ? { status } : {};
-            const loans = await Loan.find(query).skip(skip).limit(parseInt(limit));
+            let aggregationPipeLine = [{
+                $match: query
+            },{
+                $lookup: {
+                    from: "users",
+                    let: { guarantor : "$guarantor"},
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr:{
+                                    $eq:["$id", "$$guarantor"]
+                                }
+                            }
+                        }
+                        ],
+                        as: "gr"
+                    }
+            },{
+                $project: {
+                    "org" : 1,
+                "id" : 1,
+                "loan_id" : 1,
+                "name" : 1,
+                "phone" : 1,
+                "nid" : 1,
+                "address" : 1,
+                "occupation" : 1,
+                "purpose" : 1,
+                "amount" : 1,
+                "rate" : 1,
+                "applied" : 1,
+                "startDate" : 1,
+                "base": 1,
+                "status" : 1,
+                "paidCount" : 1,
+                "guarantor" : { $ifNull: [{ $first: "$gr.name" }, ""]},
+                "gPhone" : { $ifNull: [{ $first: "$gr.phone" }, 0]},
+                "gNid" : "",
+                "relation" : "",
+                }
+            }];
+            if(skip && limit){
+                aggregationPipeLine.push({
+                    $skip: skip
+                });
+                aggregationPipeLine.push({
+                    $limit: parseInt(limit)
+                })
+            }
+            const loans = await Loan.aggregate(aggregationPipeLine)
+            // const loans = await Loan.find(query).skip(skip).limit(parseInt(limit));
             const totalLoans = await Loan.countDocuments( query );
             const totalPages = Math.ceil(totalLoans / limit);
             return success(res, 'Loans retrieved successfully', loans, 200, { page: parseInt(page), limit: parseInt(limit), total: totalLoans, totalPages });
