@@ -1,16 +1,32 @@
+const User = require('../models/User');
 class UserService {
-    static async findUser(query) {
+    async findUser(query) {
         return await User.findOne(query);
     }
 
-    static async createUser(userData) {
+    async createUser(userData) {
         const newUser = new User(userData);
         return await newUser.save();
     }
 
-    static async registerUser(userData) {
+    async registerUser(userData) {
         const newUser = new User(userData);
         return await newUser.save();
+    }
+
+    async updateUser(query, updateData) {
+        const user = await User.findOneAndUpdate(query, updateData, { new: true });
+        return user;
+    }
+
+    async deleteUser(query) {
+        const user = await User.findOneAndDelete(query);
+        return user;
+    }
+
+    async getUser(query) {
+        const user = await User.find(query);
+        return user;
     }
 }
 

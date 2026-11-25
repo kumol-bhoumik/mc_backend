@@ -6,7 +6,7 @@ class LoanController {
     // Create a new loan
     async createLoan(req, res) {
         try {
-            const { name, nid, address, occupation, purpose, amount, applied, phone, rate, startDate, status, guarantor, gPhone, gNid, relation } = req.body;
+            const { name, nid, address, occupation, purpose, amount, applied, phone, rate, startDate, status, guarantor, gPhone, gNid, relation, org } = req.body;
             const totalLoans = await Loan.countDocuments();
             const base = moment(applied, 'YYYY-MM-DD').date(5).format('YYYY-MM-DD');
             const newRequestedLoan = new Loan({
@@ -29,7 +29,8 @@ class LoanController {
                 guarantor,
                 gPhone,
                 gNid,
-                relation
+                relation,
+                org
             });
 
             const savedLoan = await newRequestedLoan.save();

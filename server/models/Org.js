@@ -8,14 +8,29 @@ const orgSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    phone: {
+        type: String,
+        default: null
+    },
+    address: {
+        type: String,
+        default: null
+    },
+    regNo: {
+        type: String,
+        default: null
+    },
+    admin: [{
+        type: String
+    }],
+    users: [{
+        type: String
+    }],
     next: {
         type: Number,
         default: 0
     }
 }, { timestamps: true });
 
-orgSchema.pre('save', function(next) {
-    this.id = this._id.toString();
-});
 
-module.exports = mongoose.model('User', userSchema, "users");
+module.exports = mongoose.model('Org', orgSchema, "orgs");

@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const loanSchema = new mongoose.Schema(
   {
+    org: {
+      type: String,
+      required: [true, 'Organization is required'],
+      trim: true,
+    },
     id: {
       type: String,
       required: [true, 'ID is required'],

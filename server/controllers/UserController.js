@@ -116,16 +116,16 @@ class UserController {
     async createUser(req, res) {
         try {
             const userData = req.body;
-            if(!userData.name || !userData.email || !userData.password){
-                return badRequest(res, null, "Name, email, password and subscription are required");
+            if(!userData.name || !userData.phone || !userData.password){
+                return badRequest(res, null, "Name, phone, password and subscription are required");
             }
-            let alreadyUser = await UserService.findUser({email: userData.email});
+            let alreadyUser = await UserService.findUser({phone: userData.phone});
             if(alreadyUser){
-                return conflict(res, null, "User already exists with this email");
+                return conflict(res, null, "User already exists with this phone number");
             }
             userData.password = AuthService.hashPassword(userData.password);
             const newUser = await UserService.registerUser(userData);
-            return success(res, newUser, "User created successfully");
+            return success(res, "User created successfully", newUser, 201);
         } catch (err) {
             return error(res, err);
         }
@@ -213,19 +213,76 @@ class UserController {
 
     async logInUser(req, res) {
         try {
-            const { email, password } = req.body;
-            if(!email || !password){
-                return badRequest(res, null, "Email and password are required");
+            const { phone, password } = req.body;
+            if(!phone || !password){
+                return badRequest(res, null, "Phone number and password are required");
             }
-            const user = await UserService.findUser({email});
+            const user = await UserService.findUser({phone});
             if (!user || !AuthService.passwordCompare(password, user.password)) {
-                return unauthorized(res, null, "Invalid email or password");
+                return unauthorized(res, null, "Invalid phone number or password");
             }
-            let token = AuthService.generateToken({name: user.name, email: user.email, id: user.id, subscription: user.subscription});
-            return success(res, { token }, "Login successful");
+            let token = AuthService.generateToken({name: user.name, phone: user.phone, id: user.id, role: user.role, org: user.org});
+            return success(res, "Login successful", { token, name: user.name }, 200);
         } catch (err) {
             return error(res, err);
         }
     }
+
+    async getUser(req, res) {
+        try {
+            const { id } = req.params;
+            const user = await UserService.findUser({id});
+            if (!user) {
+                return badRequest(res, null, "User not found");
+            }
+            return success(res, "User retrieved successfully", user, 200);
+        } catch (err) {
+            return error(res, err);
+        }
+    }
+
+    async getUsers(req, res) {
+        try {
+            let query = {};
+            if(req.query.org){
+                query.org = req.query.org;
+            }
+            const users = await UserService.getUser(query);
+            return success(res, "Users retrieved successfully", users, 200);
+        } catch (err) {
+            return error(res, err);
+        }
+    }
+
+    async updateUser(req, res) {
+        try {
+            const { id } = req.params;
+            const updateData = req.body;
+            if (updateData.password) {
+                updateData.password = AuthService.hashPassword(updateData.password);
+            }
+            const updatedUser = await UserService.updateUser({id}, updateData);
+            if (!updatedUser) {
+                return badRequest(res, null, "User not found");
+            }
+            return success(res, "User updated successfully", updatedUser, 200);
+        } catch (err) {
+            return error(res, err);
+        }
+    }
+
+    async deleteUser(req, res) {
+        try {
+            const { id } = req.params;
+            const deletedUser = await UserService.deleteUser({id});
+            if (!deletedUser) {
+                return badRequest(res, null, "User not found");
+            }
+            return success(res, "User deleted successfully", deletedUser, 200);
+        } catch (err) {
+            return error(res, err);
+        }
+    }
+
 }
 module.exports = new UserController();

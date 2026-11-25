@@ -13,20 +13,20 @@ const userSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    email: { 
-        type: String
-    },
     password: { 
         type: String,
     },
-    type: {
-        type: [String],
-        enum: ['customer', 'admin', 'member'],
-        default: ['customer']
-    },
-    org: {
-        type: String,
-        required: true
+    org: [{
+        org_id: String,
+        role: {
+            type: String,
+            enum: ['admin', 'member'],
+            default: 'member'
+        }
+    }],
+    savings: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

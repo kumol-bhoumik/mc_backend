@@ -16,7 +16,7 @@ const success = (res, message = "Request successful", data, statusCode = 200, me
     return res.status(statusCode).json(response);
 };
 
-const error = (res, message = "Internal server error", data) => {
+const error = (res,data, message = "Internal server error") => {
     return res.status(500).json({
         status: 'error',
         success: false,
