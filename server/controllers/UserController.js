@@ -125,7 +125,16 @@ class UserController {
             }
             userData.password = AuthService.hashPassword(userData.password);
             const newUser = await UserService.registerUser(userData);
-            return success(res, "User created successfully", newUser, 201);
+            let token = AuthService.generateToken({name: newUser.name, phone: newUser.phone, id: newUser.id});
+            return success(res, "User created successfully", {
+                "id": "6b07cb1c73f0456101987d67",
+                "name": "nw",
+                "org": [],
+                "password": "$2b$10$2UIl5k14LetTudOcJmOX/O7WYjSdtpNV.ORMACoLddO6pB5nHLEG2",
+                "phone": "01521432289",
+                "savings": 0,
+                token
+            }, 201);
         } catch (err) {
             return error(res, err);
         }

@@ -15,6 +15,8 @@ class UserService {
     }
 
     async updateUser(query, updateData) {
+        console.log(query);
+        console.log(updateData);
         const user = await User.findOneAndUpdate(query, updateData, { new: true });
         return user;
     }

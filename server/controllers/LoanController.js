@@ -73,9 +73,10 @@ class LoanController {
 
     async getAllLoans(req, res) {
         try {
-            let { status, page, limit } = req.query;
+            let { status, page, limit, org } = req.query;
             const skip = (page - 1) * limit;
             const query = status ? { status } : {};
+            if(org) query.id = org;
             let aggregationPipeLine = [{
                 $match: query
             },{
