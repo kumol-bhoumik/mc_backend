@@ -76,7 +76,7 @@ class LoanController {
             let { status, page, limit, org } = req.query;
             const skip = (page - 1) * limit;
             const query = status ? { status } : {};
-            if(org) query.id = org;
+            if(org) query.org = org;
             let aggregationPipeLine = [{
                 $match: query
             },{

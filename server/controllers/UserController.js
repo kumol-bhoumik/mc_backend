@@ -127,11 +127,11 @@ class UserController {
             const newUser = await UserService.registerUser(userData);
             let token = AuthService.generateToken({name: newUser.name, phone: newUser.phone, id: newUser.id});
             return success(res, "User created successfully", {
-                "id": "6b07cb1c73f0456101987d67",
-                "name": "nw",
+                "id": newUser.id,
+                "name": newUser.name,
                 "org": [],
-                "password": "$2b$10$2UIl5k14LetTudOcJmOX/O7WYjSdtpNV.ORMACoLddO6pB5nHLEG2",
-                "phone": "01521432289",
+                "role": "admin",
+                "phone": newUser.phone,
                 "savings": 0,
                 token
             }, 201);
@@ -230,8 +230,8 @@ class UserController {
             if (!user || !AuthService.passwordCompare(password, user.password)) {
                 return unauthorized(res, null, "Invalid phone number or password");
             }
-            let token = AuthService.generateToken({name: user.name, phone: user.phone, id: user.id, role: user.role, org: user.org});
-            return success(res, "Login successful", { token, name: user.name }, 200);
+            let token = AuthService.generateToken({name: user.name, phone: user.phone, id: user.id, role: user.org && user.org.length>0 ? user.org[0].role : "member", org: user.org, org: user.org});
+            return success(res, "Login successful", { token, name: user.name, id: user.id, role: user.org && user.org.length>0 ? user.org[0].role : "member", org: user.org, org: user.org }, 200);
         } catch (err) {
             return error(res, err);
         }

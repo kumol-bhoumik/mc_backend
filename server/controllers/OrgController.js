@@ -81,7 +81,6 @@ class OrgController {
     async getMyOrg(req, res) {
         try {
             const userId = req.user.id;
-            console.log(userId);
             const user = await UserService.findUser({ id: userId });
             if (!user) {
                 return badRequest(res, 'User not found');
